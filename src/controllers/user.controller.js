@@ -168,4 +168,21 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+const updateDetails = asyncHandler(async (req, res) => {
+  const { username, email, fullname } = req.body;
+  if (!(username || email || fullname))
+    throw new ApiError(404, "Data not sent");
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      fullname,
+      email,
+      username,
+    },
+    { new: true }
+  ).select("-password");
+
+  return res.status(200).json(new ApiResponse(200, user, "updated"));
+});
+
 export { registerUser, loginUser, logoutUser, refreshAccessToken };
